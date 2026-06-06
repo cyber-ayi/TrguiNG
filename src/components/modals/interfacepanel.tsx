@@ -61,6 +61,7 @@ const { TAURI, invoke } = await import(
 
 const languageOverrides: Record<string, string> = {
     "zh-CN": "简体中文",
+    "zh-TW": "繁體中文",
 };
 
 export interface InterfaceFormValues {

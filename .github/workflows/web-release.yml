@@ -1,8 +1,10 @@
 name: web-release
 
 # Builds the TrguiNG *web* bundle (TRANSMISSION_WEB_HOME assets) and publishes
-# it as a release asset. Web-only: no tauri/rust toolchain. zh-CN + en only
-# (homelab-s5oyt03iv9/homelab-ops#692, scope: Simplified Chinese).
+# it as a release asset. Web-only: no tauri/rust toolchain. Builds whatever
+# locales the fork carries (kept faithful to upstream ManuZhu0728: zh-CN, zh-TW,
+# ru, en). Per homelab-s5oyt03iv9/homelab-ops#692 our *contribution/maintenance*
+# scope is Simplified Chinese only — we do not strip the other locales.
 #
 # Trigger: push a tag like `web-v1.5.1-zhcn.1`.
 
