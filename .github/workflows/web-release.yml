@@ -37,7 +37,7 @@ jobs:
           test -f dist/index.html
           name="trguing-web-${GITHUB_REF_NAME}.zip"
           # exclude source maps to keep the bundle lean
-          (cd dist && zip -qr -x '*.map' "../$name" .)
+          (cd dist && zip -qr "../$name" . -x '*.map')
           sha256sum "$name" | tee "$name.sha256"
           echo "ASSET=$name" >> "$GITHUB_ENV"
 
