@@ -1,0 +1,54 @@
+name: web-release
+
+# Builds the TrguiNG *web* bundle (TRANSMISSION_WEB_HOME assets) and publishes
+# it as a release asset. Web-only: no tauri/rust toolchain. zh-CN + en only
+# (homelab-s5oyt03iv9/homelab-ops#692, scope: Simplified Chinese).
+#
+# Trigger: push a tag like `web-v1.5.1-zhcn.1`.
+
+on:
+  push:
+    tags:
+      - "web-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
+        run: npm install --no-audit --no-fund
+
+      - name: Build web bundle
+        run: npm run webpack-prod
+
+      - name: Package (index.html + assets at zip root)
+        run: |
+          set -euo pipefail
+          test -f dist/index.html
+          name="trguing-web-${GITHUB_REF_NAME}.zip"
+          # exclude source maps to keep the bundle lean
+          (cd dist && zip -qr -x '*.map' "../$name" .)
+          sha256sum "$name" | tee "$name.sha256"
+          echo "ASSET=$name" >> "$GITHUB_ENV"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.ASSET }}
+            ${{ env.ASSET }}.sha256
+          body: |
+            TrguiNG web bundle — Simplified Chinese (zh-CN) + English only.
+            Built web-only (webpack-prod), source maps excluded.
+            Deploy: point `TRANSMISSION_WEB_HOME` at the unpacked zip
+            (homelab-ops `runbooks/transmission/docker-compose.yml`).
